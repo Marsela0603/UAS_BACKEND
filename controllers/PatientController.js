@@ -1,6 +1,7 @@
 const Patient = require("../models/Patient");
 
 class PatientController {
+  // Mendapatkan semua data pasien
   async index(req, res) {
     try {
       const patients = await Patient.getAll();
@@ -14,16 +15,19 @@ class PatientController {
     }
   }
 
+  // Menambahkan data pasien baru
   async store(req, res) {
     try {
       const { name, phone, address, status, in_date_at, out_date_at } = req.body;
 
+      // Validasi input
       if (!name || !phone || !address || !status || !in_date_at) {
         return res.status(422).json({
           message: "All fields must be filled correctly",
         });
       }
 
+      // Membuat pasien baru
       const newPatient = await Patient.create({
         name,
         phone,
@@ -45,156 +49,140 @@ class PatientController {
     }
   }
 
-  // Edit resource
+  // Mengupdate data pasien berdasarkan ID
   async update(req, res) {
     const { id } = req.params;
-    // cari id patient yang akan diupdate
-    const patient = await Patient.find(id);
+    const patient = await Patient.find(id); // Mencari pasien berdasarkan ID
 
     if (patient) {
-      // melakukan update data patient
-      const patients = await Patient.update(req.body, id);
-      const data = {
+      const updatedPatient = await Patient.update(req.body, id); // Mengupdate data pasien
+      return res.status(200).json({
         message: `Resource patient id ${id} is updated successfully`,
-        data: patients,
-      };
-
-      // The reqeust succeeded
-      return res.status(200).json(data);
+        data: updatedPatient,
+      });
     } else {
-      // jika id patient tidak ditemukan
-      const data = {
+      return res.status(404).json({
         message: `Resource patient id ${id} not found`,
-      };
-
-      // Resource not found
-      return res.status(404).json(data);
+      });
     }
   }
-  
+
+  // Menghapus data pasien berdasarkan ID
   async destroy(req, res) {
     const { id } = req.params;
     const patient = await Patient.find(id);
 
     if (patient) {
-      // menghapus patient berdasarkan id
-      await Patient.delete(id);
-      const data = {
-        message: `Menghapus patient id ${id}`,
-        data: patient,
-      };
-
-      return res.status(200).json(data);
-    } else {
-      const data = {
-        message: `Data patient id ${id} tidak ditemukan`,
-      };
-
-      return res.status(404).json(data);
-    }
-  }
- // Get Detail Resource
- async show(req, res) {
-  const { id } = req.params;
-
-  try {
-    const patient = await Patient.findById(id);
-    if (patient) {
-      res.status(200).json({
-        message: "Get Detail Resource",
+      await Patient.delete(id); // Menghapus pasien
+      return res.status(200).json({
+        message: `Deleted patient with id ${id}`,
         data: patient,
       });
     } else {
-      res.status(404).json({
-        message: "Resource not found",
+      return res.status(404).json({
+        message: `Patient with id ${id} not found`,
       });
     }
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
   }
-}
 
-// Search Resource by name
-async search(req, res) {
-  const { name } = req.query;
+  // Mendapatkan detail data pasien berdasarkan ID
+  async show(req, res) {
+    const { id } = req.params;
 
-  try {
-    const patients = await Patient.searchByName(name);
-    if (patients.length > 0) {
+    try {
+      const patient = await Patient.findById(id);
+      if (patient) {
+        res.status(200).json({
+          message: "Get Detail Resource",
+          data: patient,
+        });
+      } else {
+        res.status(404).json({
+          message: "Resource not found",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  }
+
+  // Mencari data pasien berdasarkan nama
+  async search(req, res) {
+    const { name } = req.query;
+
+    try {
+      const patients = await Patient.searchByName(name);
+      if (patients.length > 0) {
+        res.status(200).json({
+          message: "Get searched resource",
+          data: patients,
+        });
+      } else {
+        res.status(404).json({
+          message: "Resource not found",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  }
+
+  // Mendapatkan data pasien dengan status positif
+  async getPositive(req, res) {
+    try {
+      const patients = await Patient.getPositive();
       res.status(200).json({
-        message: "Get searched resource",
+        message: "Get positive resource",
+        total: patients.length,
         data: patients,
       });
-    } else {
-      res.status(404).json({
-        message: "Resource not found",
+    } catch (error) {
+      res.status(500).json({
+        message: "Server error",
+        error: error.message,
       });
     }
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+  }
+
+  // Mendapatkan data pasien yang sembuh
+  async getRecovered(req, res) {
+    try {
+      const patients = await Patient.getRecovered();
+      res.status(200).json({
+        message: "Get recovered resource",
+        total: patients.length,
+        data: patients,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  }
+
+  // Mendapatkan data pasien yang meninggal
+  async getDead(req, res) {
+    try {
+      const patients = await Patient.getDead();
+      res.status(200).json({
+        message: "Get dead resource",
+        total: patients.length,
+        data: patients,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
+    }
   }
 }
-
-// Get Positive Resource
-async getPositive(req, res) {
-  try {
-    const patients = await Patient.getPositive();
-    res.status(200).json({
-      message: "Get positive resource",
-      total: patients.length,
-      data: patients,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
-  }
-}
-
-// Mendapatkan resource yang sembuh
-async getRecovered(req, res) {
-  try {
-    const patients = await Patient.getRecovered();
-    res.status(200).json({
-      message: "Get recovered resource",
-      total: patients.length,
-      data: patients,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
-  }
-}
-
-// Mendapatkan resource yang meninggal
-async getDead(req, res) {
-  try {
-    const patients = await Patient.getDead();
-    res.status(200).json({
-      message: "Get dead resource",
-      total: patients.length,
-      data: patients,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
-  }
-}
-
- 
-}
-
-
 
 module.exports = new PatientController();

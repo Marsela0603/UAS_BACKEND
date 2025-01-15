@@ -1,8 +1,9 @@
-// import database
+// Import database
 const db = require("../config/database");
 
-// membuat class Patient
+// Membuat class Patient
 class Patient {
+  // Mengambil semua data pasien
   static getAll() {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM patients";
@@ -14,6 +15,7 @@ class Patient {
     });
   }
 
+  // Menambahkan data pasien baru
   static create(data) {
     const { name, phone, address, status, in_date_at, out_date_at } = data;
     return new Promise((resolve, reject) => {
@@ -27,7 +29,7 @@ class Patient {
         (err, result) => {
           if (err) return reject(err);
 
-          // Kembalikan data pasien baru yang disimpan
+          // Mengembalikan data pasien baru yang disimpan
           resolve({
             id: result.insertId,
             name,
@@ -41,56 +43,57 @@ class Patient {
       );
     });
   }
-  
-  // mencari data patient berdasarkan id
+
+  // Mencari data pasien berdasarkan ID
   static find(id) {
     return new Promise((resolve, reject) => {
-      const sql = "SELECT * from patients WHERE id = ?";
-      db.query(sql, id, (err, results) => {
-        // destructure object results
-        const patient = results;
-        resolve(patient);
+      const query = "SELECT * FROM patients WHERE id = ?";
+      db.query(query, id, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
       });
     });
   }
 
-  // mengupdate data patient
+  // Mengupdate data pasien
   static async update(data, id) {
-    data.out_date_at = new Date();
+    data.out_date_at = new Date(); // Menambahkan tanggal keluar jika ada
     await new Promise((resolve, reject) => {
-      const sql = "UPDATE patients SET ? WHERE id = ?";
-      db.query(sql, [data, id], (err, results) => {
+      const query = "UPDATE patients SET ? WHERE id = ?";
+      db.query(query, [data, id], (err, results) => {
+        if (err) return reject(err);
         resolve(results);
       });
     });
 
+    // Mengambil data pasien yang sudah diperbarui
     const patient = await Patient.find(id);
     return patient;
   }
 
-  // menghapus data patient
+  // Menghapus data pasien berdasarkan ID
   static delete(id) {
     return new Promise((resolve, reject) => {
-      const sql = "DELETE FROM patients WHERE id = ?";
-      db.query(sql, id, (err, results) => {
+      const query = "DELETE FROM patients WHERE id = ?";
+      db.query(query, id, (err, results) => {
+        if (err) return reject(err);
         resolve(results);
       });
     });
   }
 
- 
-   // Mendapatkan resource detail berdasarkan ID
-   static findById(id) {
+  // Mendapatkan detail pasien berdasarkan ID
+  static findById(id) {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM patients WHERE id = ?";
       db.query(query, [id], (err, results) => {
         if (err) return reject(err);
-        resolve(results[0]); // Hanya mengembalikan satu hasil
+        resolve(results[0]); // Mengembalikan satu hasil
       });
     });
   }
 
-  // Mencari resource berdasarkan nama
+  // Mencari pasien berdasarkan nama
   static searchByName(name) {
     return new Promise((resolve, reject) => {
       const query = "SELECT * FROM patients WHERE name LIKE ?";
@@ -113,31 +116,27 @@ class Patient {
   }
 
   // Mendapatkan semua pasien dengan status sembuh
-static getRecovered() {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM patients WHERE status = 'recovered'";
-    db.query(query, (err, results) => {
-      if (err) return reject(err);
-      resolve(results);
+  static getRecovered() {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM patients WHERE status = 'recovered'";
+      db.query(query, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
     });
-  });
-}
+  }
 
-// Mendapatkan semua pasien dengan status meninggal
-static getDead() {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM patients WHERE status = 'dead'";
-    db.query(query, (err, results) => {
-      if (err) return reject(err);
-      resolve(results);
+  // Mendapatkan semua pasien dengan status meninggal
+  static getDead() {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM patients WHERE status = 'dead'";
+      db.query(query, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
     });
-  });
+  }
 }
 
-
-}
-
-
-
-// export class Patient
+// Mengekspor class Patient
 module.exports = Patient;

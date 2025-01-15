@@ -41,15 +41,6 @@ class Patient {
       );
     });
   }
-
-  // static update(id, data) {
-  //   const { name, phone, address, status, in_date_at, out_date_at } = data;
-  //   return db.query(
-  //     "UPDATE patients SET name = ?, phone = ?, address = ?, status = ?, in_date_at = ?, out_date_at = ? WHERE id = ?",
-  //     [name, phone, address, status, in_date_at, out_date_at, id]
-  //   );
-  // }
-
   
   // mencari data patient berdasarkan id
   static find(id) {
@@ -86,7 +77,44 @@ class Patient {
       });
     });
   }
+
+ 
+   // Mendapatkan resource detail berdasarkan ID
+   static findById(id) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM patients WHERE id = ?";
+      db.query(query, [id], (err, results) => {
+        if (err) return reject(err);
+        resolve(results[0]); // Hanya mengembalikan satu hasil
+      });
+    });
+  }
+
+  // Mencari resource berdasarkan nama
+  static searchByName(name) {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM patients WHERE name LIKE ?";
+      db.query(query, [`%${name}%`], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+  }
+
+  // Mendapatkan semua pasien dengan status positif
+  static getPositive() {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM patients WHERE status = 'positive'";
+      db.query(query, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+  }
+
 }
+
+
 
 // export class Patient
 module.exports = Patient;

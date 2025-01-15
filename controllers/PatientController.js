@@ -157,6 +157,41 @@ async getPositive(req, res) {
     });
   }
 }
+
+// Mendapatkan resource yang sembuh
+async getRecovered(req, res) {
+  try {
+    const patients = await Patient.getRecovered();
+    res.status(200).json({
+      message: "Get recovered resource",
+      total: patients.length,
+      data: patients,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+}
+
+// Mendapatkan resource yang meninggal
+async getDead(req, res) {
+  try {
+    const patients = await Patient.getDead();
+    res.status(200).json({
+      message: "Get dead resource",
+      total: patients.length,
+      data: patients,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+}
+
  
 }
 

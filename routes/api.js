@@ -22,6 +22,8 @@ router.get("/patients/positive", PatientController.getPositive); // Get Positive
 router.post("/patients", PatientController.store); // Add resource
 router.put("/patients/:id", PatientController.update); // Edit resource
 router.delete("/patients/:id", PatientController.destroy); // Delete resource
+router.get("/patients/recovered", PatientController.getRecovered); // Get Recovered Resource
+router.get("/patients/dead", PatientController.getDead); // Get Dead Resource
 
 // export router
 module.exports = router;

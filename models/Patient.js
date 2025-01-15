@@ -112,6 +112,29 @@ class Patient {
     });
   }
 
+  // Mendapatkan semua pasien dengan status sembuh
+static getRecovered() {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT * FROM patients WHERE status = 'recovered'";
+    db.query(query, (err, results) => {
+      if (err) return reject(err);
+      resolve(results);
+    });
+  });
+}
+
+// Mendapatkan semua pasien dengan status meninggal
+static getDead() {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT * FROM patients WHERE status = 'dead'";
+    db.query(query, (err, results) => {
+      if (err) return reject(err);
+      resolve(results);
+    });
+  });
+}
+
+
 }
 
 
